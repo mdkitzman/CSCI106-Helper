@@ -1,0 +1,68 @@
+* { font-family: Calibri,Verdana,sans-serif; }
+code { font-family: consolas,monospace; }
+pre.language-markup,
+pre.language-css { display: inline-block; }
+.rubricTable {
+	margin: 0px;
+	padding: 0px;
+	width: 100%;
+	box-shadow: 10px 10px 5px #888888;
+	border: 1px solid #ffffff;
+}
+.rubricTable table {
+	width: 100%;
+	margin: 0px;
+	padding: 0px;
+	border-collapse: collapse;
+}
+.rubricTable tr:nth-child(odd) { background-color: #ffc9c9; }
+.rubricTable tr:nth-child(even) { background-color: #ffffff; }
+.rubricTable td {
+	vertical-align: middle;
+	text-align: left;
+	padding: 7px;
+	font-weight: bold;
+	color: #000000;
+}
+.rubricTable tr:first-child td {
+	background: -o-linear-gradient(bottom, #ff0000 5%, #bf0000 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #ff0000), color-stop(1, #bf0000));
+	background: -moz-linear-gradient(center top, #ff0000 5%, #bf0000 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#ff0000", endColorstr="#bf0000");
+	background: -o-linear-gradient(top, #ff0000, bf0000);
+	background-color: #ff0000;
+	border: 0px solid #ffffff;
+	text-align: center;
+	font-weight: bold;
+	color: #ffffff;
+}
+section:before {
+	content: "Passes validation";
+	background-color: green;
+	border-color:green;
+	border-style: solid;
+	border-width: 1px;
+	border-top: none;
+	border-right: none;
+	border-radius: 0px 0px 0px 5px;
+	box-shadow: 0 0 3px 1px white inset;
+	color: white;
+	font-size: 1.4em;
+	padding: 5px 30px;
+	text-align: center;
+	float:right;
+}
+section.invalid:before {
+	content: "Does not pass validation!";
+	background-color: tomato;
+	border-color:tomato;
+}
+section {
+	border: 1px solid gray;
+	margin: 20px 0;
+}
+section h3 {
+	background-color: rgba(133, 133, 133, 0.3);
+	border-bottom: 1px solid gray;
+	margin-top: 0;
+}

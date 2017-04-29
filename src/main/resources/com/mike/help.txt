@@ -1,0 +1,37 @@
+This application runs in 2 modes, validating files locally or validating
+remote web sites.
+
+==== Running in File Validation Mode ====
+
+java -jar app.jar (-f, --filesFolder) path/to/folder (-c, --chapterNumber) num
+
+ * path/to/folder is a folder that contains the following directory structure
+   
+   path/to/folder
+   |
+   + studentName1
+   | |
+   | - file1.html
+   | | ...
+   | - fileN.html
+   |   
+   | ... more student folders ...
+   |
+   + studentNameN
+     |
+     - file1.html
+     | ...
+     - fileN.html
+       
+ * num must be a number of the chapter currently assigned, and each
+   folder in the studentFolder should have a folder with that chapter
+   number in the name.
+   
+   
+==== Running in Website Validation Mode ====
+
+java -jar app.jar (-w, --checkWebsites) (-n, --websiteNamesFile) path/to/file.txt
+   
+ * path/to/file.txt
+   
+   This file should contain a list of URL's to crawl and check.

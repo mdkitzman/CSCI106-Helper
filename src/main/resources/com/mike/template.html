@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+	<head>
+		<title>%%title%%</title>
+		<meta charset="UTF-8">
+		<script type="text/javascript" src="../easyXDM/easyXDM.min.js"></script>
+		<link rel="stylesheet" href="../pageStyle.css">
+	</head>
+	<body>
+		<div id="webPageContent"></div>
+		<script type="text/javascript">
+			new easyXDM.Socket({
+				remote: "%%source%%",
+				container: document.getElementById("webPageContent"),
+				onMessage: function(message, origin){
+					this.container.getElementsByTagName("iframe")[0].style.height = message + "px";
+				}
+			});
+		</script>
+	</body>
+</html>

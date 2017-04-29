@@ -1,0 +1,12 @@
+body {
+	padding: 1px;
+	margin: 0;
+}
+
+p {
+	float: right;
+}
+
+div > #greg {
+	background-color: orange;
+}
