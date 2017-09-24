@@ -5,12 +5,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -47,46 +44,40 @@ public class DropboxSplitterUtil implements IsHelperUtil {
 		final File dropboxFilesDir = tmp;
 		Pattern filePattern = Pattern.compile("[0-9-]+ - (.+)- (.+) - (.+)");
 		
-		Map<String, Set<Path>> nameFiles = new HashMap<>();
+		Map<String, Set<File>> nameFiles = new HashMap<>();
 		try {
-			Files.walkFileTree(dropboxFilesDir.toPath(), new SimpleFileVisitor<Path>(){
-				@Override
-		        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-		        	Matcher m = filePattern.matcher(file.toFile().getName());
+			Files.walk(dropboxFilesDir.toPath())
+				.map(Path::toFile)
+				.forEach(file -> {
+					Matcher m = filePattern.matcher(file.getName());
 		        	if(!m.find())
-		        		return FileVisitResult.CONTINUE;
+		        		return;
 		        	String name = m.group(1);
 		        	if(!nameFiles.containsKey(name))
-		        		nameFiles.put(name, new HashSet<Path>());
+		        		nameFiles.put(name, new HashSet<>());
 		        	nameFiles.get(name).add(file);
-		        	
-		        	return FileVisitResult.CONTINUE;
-		        }
-			});
+				});
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 			return;
-		}
-		
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
 		}
 		
 		nameFiles.forEach((name, paths) -> {
 			File newDir = new File(dropboxFilesDir.getAbsolutePath()+File.separator+name);
         	newDir.mkdir();
         	paths.forEach(file -> {
-        		Matcher m = filePattern.matcher(file.toFile().getName());
+        		Matcher m = filePattern.matcher(file.getName());
     			if(!m.find())
     				return;
     			String fileName = m.group(3);
     			File newFile = new File(newDir.getAbsolutePath()+File.separator+fileName);
+    			if(newFile.exists() && newFile.lastModified() > file.lastModified()) 
+    				return;
         		try {
-    				Files.move(file, newFile.toPath(), StandardCopyOption.ATOMIC_MOVE);
+    				Files.move(file.toPath(), newFile.toPath(), StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
     			} catch (IOException e) {
-    				System.err.println("Could not move file "+file.toFile().getName()+" \r\n\t"+e.getMessage());
+    				System.err.println("Could not move file "+file.getName()+" \r\n\t"+e.getMessage());
     			}
         	});
 		});
