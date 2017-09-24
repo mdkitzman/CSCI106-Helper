@@ -72,8 +72,10 @@ public class DropboxSplitterUtil implements IsHelperUtil {
     				return;
     			String fileName = m.group(3);
     			File newFile = new File(newDir.getAbsolutePath()+File.separator+fileName);
-    			if(newFile.exists() && newFile.lastModified() > file.lastModified()) 
+    			if(newFile.exists() && newFile.lastModified() > file.lastModified()) {
+    				file.delete();
     				return;
+    			}
         		try {
     				Files.move(file.toPath(), newFile.toPath(), StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
     			} catch (IOException e) {

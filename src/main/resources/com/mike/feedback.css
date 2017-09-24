@@ -60,9 +60,18 @@ section.invalid:before {
 section {
 	border: 1px solid gray;
 	margin: 20px 0;
+	page-break-inside: avoid;
 }
 section h3 {
 	background-color: rgba(133, 133, 133, 0.3);
 	border-bottom: 1px solid gray;
 	margin-top: 0;
+}
+section dt {
+	font-weight: bold;
+	font-size: 150%;
+	margin-left: 0.5em;
+}
+section dd {
+	margin-bottom: 1em;
 }
