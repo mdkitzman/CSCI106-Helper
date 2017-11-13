@@ -8,6 +8,10 @@ import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -23,6 +27,7 @@ import org.apache.commons.io.IOUtils;
 public class DropboxSplitterUtil implements IsHelperUtil {
 
 	private final File zipFile; 
+	private final DateFormat dateFormatter = new SimpleDateFormat("MMM dd, yyyy hhmm a");
 	
 	public DropboxSplitterUtil(File zipFile){
 		this.zipFile = zipFile;
@@ -72,6 +77,13 @@ public class DropboxSplitterUtil implements IsHelperUtil {
     				return;
     			String fileName = m.group(3);
     			File newFile = new File(newDir.getAbsolutePath()+File.separator+fileName);
+    			try {
+					Date uploadDate = dateFormatter.parse(m.group(2));
+					newFile.setLastModified(uploadDate.getTime());
+				} catch (ParseException e1) {
+					System.err.println("Unable to parse date from "+file.getName());
+				}
+    			
     			if(newFile.exists() && newFile.lastModified() > file.lastModified()) {
     				file.delete();
     				return;
