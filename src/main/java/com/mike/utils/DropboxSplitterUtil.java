@@ -27,7 +27,7 @@ import org.apache.commons.io.IOUtils;
 public class DropboxSplitterUtil implements IsHelperUtil {
 
 	private final File zipFile; 
-	private final DateFormat dateFormatter = new SimpleDateFormat("MMM dd, yyyy hhmm a");
+	private final DateFormat dateFormatter = new SimpleDateFormat("MMM dd, yyyy hmm a");
 	
 	public DropboxSplitterUtil(File zipFile){
 		this.zipFile = zipFile;
@@ -77,19 +77,21 @@ public class DropboxSplitterUtil implements IsHelperUtil {
     				return;
     			String fileName = m.group(3);
     			File newFile = new File(newDir.getAbsolutePath()+File.separator+fileName);
+    			Date uploadDate = null;
     			try {
-					Date uploadDate = dateFormatter.parse(m.group(2));
-					newFile.setLastModified(uploadDate.getTime());
+					uploadDate = dateFormatter.parse(m.group(2));
+					if(newFile.exists() && newFile.lastModified() > uploadDate.getTime()) {
+	    				file.delete();
+	    				return;
+	    			}
 				} catch (ParseException e1) {
 					System.err.println("Unable to parse date from "+file.getName());
+					return;
 				}
-    			
-    			if(newFile.exists() && newFile.lastModified() > file.lastModified()) {
-    				file.delete();
-    				return;
-    			}
+    			    			
         		try {
     				Files.move(file.toPath(), newFile.toPath(), StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+    				newFile.setLastModified(uploadDate.getTime());
     			} catch (IOException e) {
     				System.err.println("Could not move file "+file.getName()+" \r\n\t"+e.getMessage());
     			}

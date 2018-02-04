@@ -27,10 +27,9 @@ java -jar app.jar (-f, --filesFolder) path/to/folder (-c, --chapterNumber) num
    folder in the studentFolder should have a folder with that chapter
    number in the name.
    
-   
 ==== Running in Website Validation Mode ====
 
-java -jar app.jar (-w, --checkWebsites) (-n, --websiteNamesFile) path/to/file.txt
+java -jar app.jar (-w, --checkWebsites) path/to/file.txt
    
  * path/to/file.txt
    
