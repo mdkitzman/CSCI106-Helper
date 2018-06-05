@@ -14,7 +14,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import com.mike.utils.*;
 import com.mike.validators.*;
@@ -84,9 +87,14 @@ public class Helper {
 				System.err.println("Path to file for URLs does not exist");
 				return;
 			}
-			List<String> urls;
+			List<Pair<String, String>> urls;
+			
 			try {
-				urls = IOUtils.readLines(Files.newInputStream(Paths.get(urlsFilepath), StandardOpenOption.READ), StandardCharsets.UTF_8);
+				urls = Files.readAllLines(Paths.get(urlsFilepath))
+							.stream()
+							.map(line -> line.split(";"))
+							.map(parts -> Pair.of(parts[0], parts[1]))
+							.collect(Collectors.toList());
 			} catch (IOException e) {
 				System.err.println("Unable to read urls file : "+e.getMessage());
 				return;

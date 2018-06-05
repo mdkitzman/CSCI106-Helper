@@ -44,11 +44,13 @@
 			</table>
 		</div>
 		<hr>
-    	<#list results as result>
-    	<section<#if result.hasError> class="invalid"</#if>>
+		
+<#list results as result>
+		<section<#if result.hasError> class="invalid"</#if>>
 			<h3>Feedback for <code>${result.resourceName}</code></h3>
 		</section>
-		</#list>
+
+</#list>
 		<script type="text/javascript" src="../prism.js"></script>
 	</body>
 </html>  

@@ -11,6 +11,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.mike.model.FinalProject;
 import com.mike.model.ModelValidationResult;
 import com.mike.validators.IsCSSValidator;
@@ -24,11 +26,17 @@ import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 
 public class CrawlerUtil extends ValidationUtility {
 
-	private final Collection<String> urls;
+	private final Collection<Pair<String, String>> urls;
 	
-	public CrawlerUtil(IsCSSValidator cssValidator, IsHTMLValidator htmlValidator, Collection<String> urls){
+	public CrawlerUtil(IsCSSValidator cssValidator, IsHTMLValidator htmlValidator, Collection<Pair<String, String>> urls){
 		super(cssValidator, htmlValidator);
 		this.urls = urls;
+	}
+	
+	private String url2username(String url) {
+		final Pattern userPattern = Pattern.compile("org.coloradomesa.edu/~([a-zA-Z0-9]+)/");
+		Matcher m = userPattern.matcher(url);
+		return !m.find() ? "Unknown Student" : m.group(1);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -49,26 +57,20 @@ public class CrawlerUtil extends ValidationUtility {
 			return;
 		}
         
-        urls.forEach(crawlController::addSeed);
+        urls.stream().map(pair -> pair.getLeft()).forEach(crawlController::addSeed);
+       	Map<String, String> username2name = urls.stream().collect(Collectors.toMap(urlPair -> url2username(urlPair.getLeft()), urlPair -> urlPair.getRight()));
        	
-       	final Pattern userPattern = Pattern.compile("org.coloradomesa.edu/~([a-zA-Z0-9]+)/");
         
         crawlController.start(PageCrawler.class, 4);
-        List<CrawlResult> urls = new ArrayList<CrawlResult>();
+        List<CrawlResult> crawledUrls = new ArrayList<CrawlResult>();
 		crawlController
 			.getCrawlersLocalData()
 			.stream()
 			.map(obj -> (Set<CrawlResult>)obj)
-			.forEach(urlSet -> urls.addAll(urlSet));
+			.forEach(urlSet -> crawledUrls.addAll(urlSet));
 		
-		Map<String, List<CrawlResult>> user2Urls = urls.stream()
-			.collect(Collectors.groupingBy(url -> {
-				Matcher m = userPattern.matcher(url.getUrl());
-				if(!m.find())
-					return "ungrouped";
-				String student = m.group(1);
-				return student;
-			}));
+		Map<String, List<CrawlResult>> user2Urls = crawledUrls.stream()
+			.collect(Collectors.groupingBy(url -> username2name.get(url2username(url.getUrl()))));
 		
 		user2Urls.keySet().stream().forEach(student -> {
 			
@@ -94,7 +96,10 @@ public class CrawlerUtil extends ValidationUtility {
 				.map(CrawlResult::getUrl)
 				.map(urlStr -> {
 					try { return new URL(urlStr); }
-					catch (Exception e){ return null;  }
+					catch (Exception e){
+						System.err.format("Invalid CSS URL %s : %s%n", urlStr, e.getMessage());
+						return null;  
+					}
 				})
 				.filter(url -> url != null)
 				.map(url -> {
@@ -116,7 +121,10 @@ public class CrawlerUtil extends ValidationUtility {
 				.map(CrawlResult::getUrl)
 				.map(urlStr -> {
 					try { return new URL(urlStr); }
-					catch (Exception e){ return null; }
+					catch (Exception e){
+						System.err.format("Invalid HTML URL %s : %s%n", urlStr, e.getMessage());
+						return null; 
+					}
 				})
 				.filter(url -> url != null)
 				.map(url -> {
